@@ -8,50 +8,50 @@ import org.apache.hadoop.hive.serde2.objectinspector.ObjectInspector;
 import org.apache.hadoop.hive.serde2.objectinspector.ObjectInspectorFactory;
 import org.apache.hadoop.hive.serde2.objectinspector.StructObjectInspector;
 import org.apache.hadoop.hive.serde2.objectinspector.primitive.PrimitiveObjectInspectorFactory;
+import org.json.JSONArray;
+import org.json.JSONObject;
 
 import java.util.List;
 
-public class MyUDTF extends GenericUDTF {
+public class MultUDTF extends GenericUDTF {
 
-    /**
-     * 这个初始化方法必须要重写，不然调用父类方法是直接抛出异常
-     * 初始化方法中定义列名和数据类型
-     * @param argOIs
-     * @return
-     * @throws UDFArgumentException
-     */
     @Override
     public StructObjectInspector initialize(StructObjectInspector argOIs) throws UDFArgumentException {
-
         //定义转化后列的名称,可以转化为多列多行
         List<String> fieldNames = Lists.newArrayList();
+        fieldNames.add("id");
         fieldNames.add("name");
+        fieldNames.add("url");
 
         //定义转化后数据的类型
         List<ObjectInspector> valueTypes = Lists.newArrayList();
         //必须使用hive中提供的字符串类型
+        valueTypes.add(PrimitiveObjectInspectorFactory.javaIntObjectInspector);
+        valueTypes.add(PrimitiveObjectInspectorFactory.javaStringObjectInspector);
         valueTypes.add(PrimitiveObjectInspectorFactory.javaStringObjectInspector);
 
         return ObjectInspectorFactory.getStandardStructObjectInspector(fieldNames,valueTypes);
     }
 
-    /**
-     * 处理每行的数据,objects为自定义函数的参数
-     * @param objects
-     * @throws HiveException
-     */
     public void process(Object[] objects) throws HiveException {
-        //比如将字符串拆分,实现explode函数的功能
-        String str = objects[0].toString();
-        String separator = objects[1].toString();
-        String[] names = str.split(separator);
-        List<String> nameList = Lists.newArrayList();
+        try {
+            String json = String.valueOf(objects[0]);
+            JSONArray jsonArray = new JSONArray(json);
+            List<Object> list = Lists.newArrayList();
+            for (int i = 0; i < jsonArray.length(); i++) {
+                JSONObject jsonObject = jsonArray.getJSONObject(i);
+                String name = jsonObject.getString("name");
+                String url = jsonObject.getString("url");
+                Integer id = jsonObject.getInt("id");
 
-        for(String name:names) {
-            //调用父类的forward方法,将数据输出到收集器中
-            nameList.clear();
-            nameList.add(name);
-            forward(nameList);
+                list.clear();
+                list.add(id);
+                list.add(name);
+            list.add(url);
+                forward(list);
+            }
+        }catch (Exception e){
+            e.printStackTrace();
         }
     }
 
