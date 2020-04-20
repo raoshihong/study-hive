@@ -9,11 +9,11 @@
     <version>1.0-SNAPSHOT</version>
 
     <dependencies>
-<!--        <dependency>-->
-<!--            <groupId>org.apache.hadoop</groupId>-->
-<!--            <artifactId>hadoop-common</artifactId>-->
-<!--            <version>2.7.4</version>-->
-<!--        </dependency>-->
+        <dependency>
+            <groupId>org.apache.hadoop</groupId>
+            <artifactId>hadoop-common</artifactId>
+            <version>2.7.4</version>
+        </dependency>
 <!--        <dependency>-->
 <!--            <groupId>org.apache.hadoop</groupId>-->
 <!--            <artifactId>hadoop-client</artifactId>-->
@@ -38,6 +38,13 @@
         <dependency>
             <groupId>org.apache.hive</groupId>
             <artifactId>hive-exec</artifactId>
+            <version>1.2.2</version>
+        </dependency>
+
+        <!-- hive jdbc -->
+        <dependency>
+            <groupId>org.apache.hive</groupId>
+            <artifactId>hive-jdbc</artifactId>
             <version>1.2.2</version>
         </dependency>
     </dependencies>
